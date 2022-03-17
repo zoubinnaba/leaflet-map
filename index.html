@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webmap 201</title>
+    <link rel="stylesheet" href="src/leaflet.css">
+    <link rel="stylesheet" href="src/css/bootstrap.css">
+    <link rel="stylesheet" href="pulgins/L.Control.Pan.css">
+    <link rel="stylesheet" href="pulgins/L.Control.Zoomslider.css">
+    <link rel="stylesheet" href="pulgins/L.Control.MousePosition.css">
+    <link rel="stylesheet" href="pulgins/Leaflet.PolylineMeasure.css"/>
+    <link rel="stylesheet" href="pulgins/L.Control.Sidebar.css"/>
+    <link rel="stylesheet" href="pulgins/easy-button.css">
+    <link rel="stylesheet" href="pulgins/css/L.Control.OpenCageGeocoding.css">
+    <link rel="stylesheet" href="pulgins/leaflet-style-editor/css/Leaflet.StyleEditor.css">
+
+    <script src="src/leaflet.js"></script>
+    <script src="src/jquery.js"></script>
+    <script src="pulgins/L.Control.Pan.js"></script>
+    <script src="pulgins/L.Control.Zoomslider.js"></script>
+    <script src="pulgins/L.Control.MousePosition.js"></script>
+    <script src="pulgins/Leaflet.PolylineMeasure.js"></script>
+    <script src="pulgins/L.Control.Sidebar.js"></script>
+    <script src="pulgins/easy-button.js"></script>
+    <script src="pulgins/leaflet-providers.js"></script>
+    <script src="pulgins/js/L.Control.OpenCageGeocoding.js"></script>
+    <script src="pulgins/leaflet-style-editor/javascript/Leaflet.StyleEditor.js"></script>
+    <script src="pulgins/leaflet-style-editor/javascript/Leaflet.StyleForms.js"></script>
+
+    <!--    ***************  Begin Leaflet.Draw-->
+    
+    
+    <script src="pulgins/leaflet-draw/Leaflet.Draw.Event.js"></script>
+    <script src="pulgins/leaflet-draw/Leaflet.draw.js"></script>
+    <link rel="stylesheet" href="pulgins/leaflet-draw/leaflet.draw.css"/>
+
+    <script src="pulgins/leaflet-draw/Toolbar.js"></script>
+    <script src="pulgins/leaflet-draw/Tooltip.js"></script>
+
+    <script src="pulgins/leaflet-draw/ext/GeometryUtil.js"></script>
+    <script src="pulgins/leaflet-draw/ext/LatLngUtil.js"></script>
+    <script src="pulgins/leaflet-draw/ext/LineUtil.Intersect.js"></script>
+    <script src="pulgins/leaflet-draw/ext/Polygon.Intersect.js"></script>
+    <script src="pulgins/leaflet-draw/ext/Polyline.Intersect.js"></script>
+    <script src="pulgins/leaflet-draw/ext/TouchEvents.js"></script>
+
+    <script src="pulgins/leaflet-draw/draw/DrawToolbar.js"></script>
+    <script src="pulgins/leaflet-draw/draw/handler/Draw.Feature.js"></script>
+    <script src="pulgins/leaflet-draw/draw/handler/Draw.SimpleShape.js"></script>
+    <script src="pulgins/leaflet-draw/draw/handler/Draw.Polyline.js"></script>
+    <script src="pulgins/leaflet-draw/draw/handler/Draw.Circle.js"></script>
+    <script src="pulgins/leaflet-draw/draw/handler/Draw.Marker.js"></script>
+    <script src="pulgins/leaflet-draw/draw/handler/Draw.Polygon.js"></script>
+    <script src="pulgins/leaflet-draw/draw/handler/Draw.Rectangle.js"></script>
+
+
+    <script src="pulgins/leaflet-draw/edit/EditToolbar.js"></script>
+    <script src="pulgins/leaflet-draw/edit/handler/EditToolbar.Edit.js"></script>
+    <script src="pulgins/leaflet-draw/edit/handler/EditToolbar.Delete.js"></script>
+
+    <script src="pulgins/leaflet-draw/Control.Draw.js"></script>
+
+    <script src="pulgins/leaflet-draw/edit/handler/Edit.Poly.js"></script>
+    <script src="pulgins/leaflet-draw/edit/handler/Edit.SimpleShape.js"></script>
+    <script src="pulgins/leaflet-draw/edit/handler/Edit.Circle.js"></script>
+    <script src="pulgins/leaflet-draw/edit/handler/Edit.Rectangle.js"></script>
+    <script src="pulgins/leaflet-draw/edit/handler/Edit.Marker.js"></script>
+    
+<!--    **************  End of Lealet Draw-->
+    
+    <style>
+        body {
+            box-sizing: border-box;
+            display: flex;
+        }
+
+        #mapdiv {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="side-bar" class="col-md-3">
+        <button id="btn-locate" class="btn btn-primary btn-block">Locate</button>
+        <button id="btn-zocalo" class="btn btn-primary btn-block">Zoom To Calo</button>
+        <button id="btn-zomgdg" class="btn btn-primary btn-block">Zoom To GDG</button>
+        <button id="btnAddgdg" class="btn btn-primary btn-block">Add GDG</button>
+        <button id="btnColor" class="btn btn-primary btn-block">Change Color</button>
+        <h4>Zoom Level: <span id="zoom-level"></span></h4>
+        <h4>Map Center: <span id="map-center"></span></h4>
+        <h4>Mouse Location: <span id="mouse-location"></span></h4>
+        <h4>Image opacity: <span id="image-opacity">0.5</span></h4>
+        <input type="range" id="sldOpacity" min="0" max="1" step="0.1" value="0.5">
+    </div>
+    <div id="mapdiv" class="col-md-12"></div>
+    <script>
+        let myMap;
+        let layOSM;
+        let lyrCarto;
+        let lyrTopo;
+        let lyrImagery;
+        let lyrLome;
+        let fgGroupe;
+        let fgpDrawItems;
+        let mrkCurrentLocation;
+        let mrkGdg;
+        let plnBikeRoute;
+        let popZacalo;
+        let ctlEasy;
+        let ctlAttribute;
+        let ctlScale;
+        let ctlPan;
+        let ctlZoomSlider;
+        let ctlMouse;
+        let ctlMeasure;
+        let ctlSidebar;
+        let ctlSearch;
+        let ctlLayers;
+        let objBasemaps;
+        let ctlDraw;
+        let ctlStyle;
+        let objOverlays;
+        //let searchOptions;
+
+        $(document).ready(function(){
+            myMap = L.map('mapdiv', {center:[6.136629, 1.222186], zoom:13,
+                zoomControl:false,
+                attributionControl:false,
+            });
+
+            //OpenStreetMap.Mapnik
+            layOSM = L.tileLayer.provider('OpenStreetMap.France');
+            lyrCarto = L.tileLayer.provider('CartoDB.Positron');
+            lyrTopo = L.tileLayer.provider('Esri.WorldTopoMap');
+            lyrImagery = L.tileLayer.provider('Esri.WorldImagery');
+
+            myMap.addLayer(layOSM);
+
+            lyrLome = L.imageOverlay("img/satelite.png", [[6.20046, 1.24197], [6.17362, 1.18639]],{opacity:0.5}).addTo(myMap);
+
+            objBasemaps = {
+                "Open Street Map": layOSM,
+                "Carto World": lyrCarto,
+                "World TopoMap": lyrTopo,
+                "Imagery": lyrImagery,
+            };
+
+            mrkGdg = L.marker([6.20497, 1.24271], {draggable:true});
+            mrkGdg.bindTooltip("Google Developpeur Group");
+
+            plnBikeRoute = L.polygon(
+                [[[
+                    [[6.1944,1.21691],
+                    [6.19508,1.22223],
+                    [6.19517,1.22987],
+                    [6.19112,1.2415],
+                    [6.19073,1.22008],
+                    ],
+                ]]],
+                {
+                    color:'red',
+                    fillColor:'yellow',
+                    fillOpacity:0.5,
+                }
+            );
+
+        
+
+            fgGroupe = L.featureGroup([plnBikeRoute]).addTo(myMap);
+
+            fgpDrawItems = new L.featureGroup();
+            fgpDrawItems.addTo(myMap);
+
+            objOverlays = {
+                "Lome Image": lyrLome,
+                "Vector Object": fgGroupe,
+                "Draws Items": fgpDrawItems
+            };
+
+            ctlLayers = L.control.layers(objBasemaps, objOverlays).addTo(myMap);
+
+            ctlPan = L.control.pan().addTo(myMap);
+
+            ctlZoomSlider = L.control.zoomslider({
+                position: 'topright',
+            }).addTo(myMap);
+
+            ctlMouse = L.control.mousePosition({
+                position: 'bottomright',
+            }).addTo(myMap);
+
+
+            ctlMeasure = L.control.polylineMeasure().addTo(myMap);
+
+            ctlSidebar = L.control.sidebar('side-bar').addTo(myMap);
+
+            ctlEasy = L.easyButton('glyphicon-transfert', function(){
+                ctlSidebar.toggle();
+            }).addTo(myMap);
+
+            ctlSearch = L.Control.openCageGeocoding({
+                key: '17ef3303c1c14691aaabab05b8d47edd',
+                limit: 5,
+            }).addTo(myMap);
+
+
+            ctlAttribute = L.control.attribution({
+                position: 'bottomleft',
+            }).addTo(myMap);
+            ctlAttribute.addAttribution('&copyZoubinnaba');
+            ctlAttribute.addAttribution('<a href="openstreetmap.org">OpenStreetMap</a>');
+
+            ctlScale = L.control.scale({
+                position: 'bottomleft',
+                maxWidth: 200,
+                imperial: false,
+            }).addTo(myMap);
+
+            
+            ctlStyle = L.control.styleEditor(
+                {
+                    position: 'topright'
+                }
+            ).addTo(myMap);
+            
+
+            ctlDraw = new L.Control.Draw({
+                draw: {
+                    circle: false
+                },
+                edit: {
+                    featureGroup: fgpDrawItems
+                }
+            });
+            myMap.addControl(ctlDraw);
+      
+            myMap.on("draw:created", function(e) {
+                console.log(e);
+                fgpDrawItems.addLayer(e.layer);
+            });
+
+            popZacalo = L.popup({maxWidth:200, keepInView:true});
+            popZacalo.setLatLng([6.136629, 1.222186]);
+            popZacalo.setContent("<h1>Zocalo</h1><img src='img/zocalo.jpg' width='200px'>");
+
+
+            
+            myMap.on("keypress", function(e) {
+                if (e.originalEvent.key=="l"){
+                    myMap.locate();
+                }
+            });
+
+            myMap.on("locationfound", function(e) {
+                console.log(e);
+                if (mrkCurrentLocation) {
+                    mrkCurrentLocation.remove();
+                }
+                mrkCurrentLocation = L.circleMarker(e.latlng,
+                {radius:e.accuracy/1}).addTo(myMap);
+                myMap.setView(e.latlng, 14);
+            });
+
+            myMap.on('locationerror', function(e) {
+                console.log(e);
+                //alert("Location not found");
+            });
+
+            myMap.on('zoomend', function() {
+                $('#zoom-level').html(myMap.getZoom());
+            });
+
+            myMap.on('moveend', function() {
+                $('#map-center').html(LatLngToArrayString(myMap.getCenter()));
+            });
+
+            myMap.on('mousemove', function(e) {
+                $('#mouse-location').html(LatLngToArrayString(e.latlng));
+            });
+
+            mrkGdg.on("dragend", function() {
+                mrkGdg.setTooltipContent("Curent Location: "+mrkGdg.getLatLng().toString()
+                +"</br>"+"Distance to GDG: "+mrkGdg.getLatLng().distanceTo([6.20497, 1.24271]).toFixed(0)
+                );
+            });
+
+            $('#btn-locate').click(function() {
+                myMap.locate();
+            });
+
+            $('#btn-zocalo').click(function() {
+                myMap.setView([6.136629, 1.222186], 17);
+                myMap.openPopup(popZacalo);
+            });
+
+            $("#btn-zomgdg").click(function() {
+                myMap.setView([6.20497, 1.24271], 17);
+                mrkGdg.setLatLng([6.20497, 1.24271]);
+                mrkGdg.setTooltipContent("Google Developpeur Groupe");
+            });
+
+            $("#sldOpacity").on('change', function(){
+                $('#image-opacity').html(this.value);
+                lyrLome.setOpacity(this.value);
+            });
+
+            $("#btnColor").click(function(){
+                fgGroupe.setStyle({
+                    color: 'purple',
+                    fillColor: 'green',
+                    fillOpacity: 0.8
+                });
+            });
+
+            $("#btnAddgdg").click(function() {
+                if(fgGroupe.hasLayer(mrkGdg)){
+                    fgGroupe.removeLayer(mrkGdg);
+                    $("#btnAddgdg").html("Add GDG to Vector Object");
+                } else {
+                    fgGroupe.addLayer(mrkGdg);
+                    $("#btnAddgdg").html("Remove GDG to Vector Object");
+                }
+            });
+            
+        });
+
+        function LatLngToArrayString(ll) {
+            //console.log(ll);
+            return "["+ll.lat.toFixed(5)+", "+ll.lng.toFixed(5)+"]";
+        }
+    </script>
+</body>
+</html>
