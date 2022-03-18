@@ -102,13 +102,14 @@
         let lyrCarto;
         let lyrTopo;
         let lyrImagery;
-        let lyrLome;
+        //let lyrLome;
+        let lyrVille;
         let fgGroupe;
         let fgpDrawItems;
         let mrkCurrentLocation;
         let mrkGdg;
         let plnBikeRoute;
-        let popZacalo;
+        //let popZacalo;
         let ctlEasy;
         let ctlAttribute;
         let ctlScale;
@@ -139,7 +140,7 @@
 
             myMap.addLayer(layOSM);
 
-            lyrLome = L.imageOverlay("img/satelite.png", [[6.20046, 1.24197], [6.17362, 1.18639]],{opacity:0.5}).addTo(myMap);
+            //lyrLome = L.imageOverlay("img/satelite.png", [[6.20046, 1.24197], [6.17362, 1.18639]],{opacity:0.5}).addTo(myMap);
 
             objBasemaps = {
                 "Open Street Map": layOSM,
@@ -169,14 +170,20 @@
 
         
 
-            fgGroupe = L.featureGroup([plnBikeRoute]).addTo(myMap);
+            //fgGroupe = L.featureGroup([plnBikeRoute]).addTo(myMap);
 
             fgpDrawItems = new L.featureGroup();
             fgpDrawItems.addTo(myMap);
 
+            lyrVille = L.geoJSON.ajax('data/ville-togo.geojson').addTo(myMap);
+            lyrVille.on("data:loaded", function(){
+                myMap.fitBounds(lyrVille.getBounds());
+            });
+
             objOverlays = {
-                "Lome Image": lyrLome,
-                "Vector Object": fgGroupe,
+                //"Lome Image": lyrLome,
+                "Togo Ville": lyrVille,
+                //"Vector Object": fgGroupe,
                 "Draws Items": fgpDrawItems
             };
 
@@ -242,10 +249,11 @@
                 fgpDrawItems.addLayer(e.layer);
             });
 
+            /**
             popZacalo = L.popup({maxWidth:200, keepInView:true});
             popZacalo.setLatLng([6.136629, 1.222186]);
             popZacalo.setContent("<h1>Zocalo</h1><img src='img/zocalo.jpg' width='200px'>");
-
+            **/
 
             
             myMap.on("keypress", function(e) {
