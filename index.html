@@ -175,7 +175,9 @@
             fgpDrawItems = new L.featureGroup();
             fgpDrawItems.addTo(myMap);
 
-            lyrVille = L.geoJSON.ajax('data/ville-togo.geojson').addTo(myMap);
+            lyrVille = L.geoJSON.ajax("data/ville-togo.geojson",
+            {pointToLayer: returnVilleMarker}
+            ).addTo(myMap);
             lyrVille.on("data:loaded", function(){
                 myMap.fitBounds(lyrVille.getBounds());
             });
@@ -338,6 +340,13 @@
         function LatLngToArrayString(ll) {
             //console.log(ll);
             return "["+ll.lat.toFixed(5)+", "+ll.lng.toFixed(5)+"]";
+        }
+
+        function returnVilleMarker(json, latlng){
+            let attr = json.properties;
+            console.log(attr.POPULATION);
+            return L.circleMarker(latlng, {radius:10, color:"deeppink"}).
+            bindTooltip("<h4>Nom: "+attr.LOCALITE+"</h4>Poupulation: "+attr.POPULATION);
         }
     </script>
 </body>
