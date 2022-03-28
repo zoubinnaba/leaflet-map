@@ -29,6 +29,7 @@
     <script src="pulgins/js/L.Control.OpenCageGeocoding.js"></script>
     <script src="pulgins/leaflet-style-editor/javascript/Leaflet.StyleEditor.js"></script>
     <script src="pulgins/leaflet-style-editor/javascript/Leaflet.StyleForms.js"></script>
+    <script src="pulgins/leaflet.sprite.js"></script>
 
     <!--    ***************  Begin Leaflet.Draw-->
     
@@ -124,9 +125,13 @@
         let ctlDraw;
         let ctlStyle;
         let objOverlays;
+        let icnRedSprite;
+        let icnVioletSprite;
         //let searchOptions;
 
         $(document).ready(function(){
+            icnRedSprite = L.spriteIcon('red');
+            icnVioletSprite = L.spriteIcon('violet')
             myMap = L.map('mapdiv', {center:[6.136629, 1.222186], zoom:13,
                 zoomControl:false,
                 attributionControl:false,
@@ -344,9 +349,23 @@
 
         function returnVilleMarker(json, latlng){
             let attr = json.properties;
-            console.log(attr.POPULATION);
-            return L.circleMarker(latlng, {radius:10, color:"deeppink"}).
+            colVil = icnRedSprite;
+            return L.marker(latlng, {icon: colVil});
+            //console.log(attr.POPULATION);
+            //let wgVil = 5;
+            //let opVil = 1;
+            //let colVil = "lightgreen";
+            //let dashVil = '3, 6';
+            /**
+            return L.circleMarker(latlng, 
+            {radius:10, 
+            color: colVil,
+            weight: wgVil,
+            opacity: opVil,
+            dashArray: dashVil,
+            }).
             bindTooltip("<h4>Nom: "+attr.LOCALITE+"</h4>Poupulation: "+attr.POPULATION);
+            **/
         }
     </script>
 </body>
